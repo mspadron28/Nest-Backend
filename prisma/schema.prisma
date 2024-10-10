@@ -1,0 +1,1392 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model adjunto {
+  id                                                                 Int                     @id @default(autoincrement())
+  archivo                                                            String?                 @db.VarChar(255)
+  ruta                                                               String?                 @db.VarChar(255)
+  archivo_hash                                                       String?                 @db.VarChar(255)
+  size                                                               Int
+  contenido                                                          String?
+  persona                                                            persona[]
+  proceso_reclutamiento_proceso_reclutamiento_foto_calzadoToadjunto  proceso_reclutamiento[] @relation("proceso_reclutamiento_foto_calzadoToadjunto")
+  proceso_reclutamiento_proceso_reclutamiento_foto_camisetaToadjunto proceso_reclutamiento[] @relation("proceso_reclutamiento_foto_camisetaToadjunto")
+  proceso_reclutamiento_proceso_reclutamiento_foto_jockeyToadjunto   proceso_reclutamiento[] @relation("proceso_reclutamiento_foto_jockeyToadjunto")
+  proceso_reclutamiento_proceso_reclutamiento_foto_uniformeToadjunto proceso_reclutamiento[] @relation("proceso_reclutamiento_foto_uniformeToadjunto")
+  recluta_recluta_certif_covidToadjunto                              recluta[]               @relation("recluta_certif_covidToadjunto")
+  recluta_recluta_fotoToadjunto                                      recluta[]               @relation("recluta_fotoToadjunto")
+  seg_usuario                                                        seg_usuario[]
+}
+
+model auth_group {
+  id                     Int                      @id @default(autoincrement())
+  name                   String                   @unique @db.VarChar(150)
+  auth_group_permissions auth_group_permissions[]
+  auth_user_groups       auth_user_groups[]
+
+  @@index([name], map: "auth_group_name_a6ea08ec_like")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_group_permissions {
+  id              BigInt          @id @default(autoincrement())
+  group_id        Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissio_permission_id_84c5c92e_fk_auth_perm")
+  auth_group      auth_group      @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_group_permissions_group_id_b120cbf9_fk_auth_group_id")
+
+  @@unique([group_id, permission_id], map: "auth_group_permissions_group_id_permission_id_0cd325b0_uniq")
+  @@index([group_id], map: "auth_group_permissions_group_id_b120cbf9")
+  @@index([permission_id], map: "auth_group_permissions_permission_id_84c5c92e")
+}
+
+model auth_permission {
+  id                         Int                          @id @default(autoincrement())
+  name                       String                       @db.VarChar(255)
+  content_type_id            Int
+  codename                   String                       @db.VarChar(100)
+  auth_group_permissions     auth_group_permissions[]
+  auth_user_user_permissions auth_user_user_permissions[]
+
+  @@unique([content_type_id, codename], map: "auth_permission_content_type_id_codename_01ab375a_uniq")
+  @@index([content_type_id], map: "auth_permission_content_type_id_2f476e4b")
+}
+
+model auth_user {
+  id                         Int                          @id @default(autoincrement())
+  password                   String                       @db.VarChar(128)
+  last_login                 DateTime?                    @db.Timestamptz(6)
+  is_superuser               Boolean
+  username                   String                       @unique @db.VarChar(150)
+  first_name                 String                       @db.VarChar(150)
+  last_name                  String                       @db.VarChar(150)
+  email                      String                       @db.VarChar(254)
+  is_staff                   Boolean
+  is_active                  Boolean
+  date_joined                DateTime                     @db.Timestamptz(6)
+  auth_user_groups           auth_user_groups[]
+  auth_user_user_permissions auth_user_user_permissions[]
+
+  @@index([username], map: "auth_user_username_6821ab7c_like")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_groups {
+  id         BigInt     @id @default(autoincrement())
+  user_id    Int
+  group_id   Int
+  auth_group auth_group @relation(fields: [group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_group_id_97559544_fk_auth_group_id")
+  auth_user  auth_user  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_groups_user_id_6a12ed8b_fk_auth_user_id")
+
+  @@unique([user_id, group_id], map: "auth_user_groups_user_id_group_id_94350c0c_uniq")
+  @@index([group_id], map: "auth_user_groups_group_id_97559544")
+  @@index([user_id], map: "auth_user_groups_user_id_6a12ed8b")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model auth_user_user_permissions {
+  id              BigInt          @id @default(autoincrement())
+  user_id         Int
+  permission_id   Int
+  auth_permission auth_permission @relation(fields: [permission_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permi_permission_id_1fbb5f2c_fk_auth_perm")
+  auth_user       auth_user       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id")
+
+  @@unique([user_id, permission_id], map: "auth_user_user_permissions_user_id_permission_id_14a6b632_uniq")
+  @@index([permission_id], map: "auth_user_user_permissions_permission_id_1fbb5f2c")
+  @@index([user_id], map: "auth_user_user_permissions_user_id_a95ead1b")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model base_movilizacion {
+  id                                                                   Int                                @id @default(autoincrement())
+  localizacion                                                         Int
+  jefe                                                                 Int
+  nombre                                                               String                             @unique @db.VarChar(50)
+  direccion                                                            String                             @db.VarChar(255)
+  geometria                                                            String
+  activo                                                               Boolean?
+  old_jefe                                                             Int?
+  id_babel                                                             Int?
+  codigo                                                               Int?
+  nmcl_dominio_localizacion                                            nmcl_dominio_localizacion          @relation(fields: [localizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario_base_movilizacion_jefeToseg_usuario                      seg_usuario                        @relation("base_movilizacion_jefeToseg_usuario", fields: [jefe], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_base_movilizacion_jefe")
+  bases_jefes                                                          bases_jefes[]
+  centro_movilizacion                                                  centro_movilizacion[]
+  persona                                                              persona[]
+  proceso_reclutamiento_lugar_base                                     proceso_reclutamiento_lugar_base[]
+  recluta_proceso_recluta_proceso_base_movilizacionTobase_movilizacion recluta_proceso[]                  @relation("recluta_proceso_base_movilizacionTobase_movilizacion")
+  reserva_organico                                                     reserva_organico[]
+  seg_usuario_seg_usuario_baseTobase_movilizacion                      seg_usuario[]                      @relation("seg_usuario_baseTobase_movilizacion")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model base_occ {
+  numero String? @db.VarChar
+  cedula String? @db.VarChar
+  unidad String? @db.VarChar
+
+  @@ignore
+}
+
+model bases_jefes {
+  id                Int               @id @default(autoincrement())
+  base              Int
+  jefe              Int
+  fecha_inicio      DateTime          @db.Timestamp(6)
+  fecha_fin         DateTime?         @db.Timestamp(6)
+  old_jefe          Int?
+  base_movilizacion base_movilizacion @relation(fields: [base], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario       seg_usuario       @relation(fields: [jefe], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_base_jefes_jefe")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model becas_turismo {
+  identificacion String? @db.VarChar(150)
+  IDENinteger    Int?    @map(" IDENinteger")
+
+  /// This field was commented out because of an invalid name. Please provide a valid one that matches [a-zA-Z][a-zA-Z0-9_]*
+  // 106520174 Int? @map("106520174")
+  @@ignore
+}
+
+model cantons {
+  id_canton   String     @id @db.Char(4)
+  canton_name String?    @db.VarChar(100)
+  province_id String?    @db.Char(2)
+  provinces   provinces? @relation(fields: [province_id], references: [id_prov], onDelete: NoAction, onUpdate: NoAction)
+  parishes    parishes[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model capacitacion_test {
+  C_dula           String? @map("Cédula") @db.VarChar
+  Nombre_completo  String? @map("Nombre completo") @db.VarChar(50)
+  Sexo             String? @db.VarChar(50)
+  Fecha_nacimiento String? @map("Fecha nacimiento") @db.VarChar(50)
+  Edad             String? @db.VarChar
+  Correo           String? @db.VarChar(50)
+  Estado_acad_mico String? @map("Estado académico") @db.VarChar(50)
+  Zona             Int?
+  Centro           String? @db.VarChar(50)
+  C_digo_curso     String? @map("Código curso") @db.VarChar
+  Curso            String? @db.VarChar(128)
+  Fecha_inicio     String? @map("Fecha inicio") @db.VarChar(50)
+  Fecha_fin        String? @map("Fecha fin") @db.VarChar(50)
+  Provincia        String? @db.VarChar(50)
+  Cant_n           String? @map("Cantón") @db.VarChar(50)
+  unidad_militar   Int?
+
+  @@ignore
+}
+
+model capacitaciones {
+  id                         Int                        @id @default(autoincrement())
+  tipo                       String                     @db.VarChar(20)
+  nombre                     String                     @db.VarChar(256)
+  institucion                Int
+  horas                      Int
+  fecha_inicio               DateTime                   @db.Timestamp(6)
+  fecha_fin                  DateTime                   @db.Timestamp(6)
+  id_curso                   String                     @db.VarChar(100)
+  url_web                    String?                    @db.VarChar(256)
+  leva_desde                 Int
+  leva_hasta                 Int
+  instituciones_capacitacion instituciones_capacitacion @relation(fields: [institucion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reservista_capacitacion    reservista_capacitacion[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model centro_instruccion {
+  id                                                                                                     Int                               @id @default(autoincrement())
+  localizacion                                                                                           Int
+  nombre                                                                                                 String                            @db.VarChar(50)
+  fuerza                                                                                                 String                            @db.VarChar(15)
+  direccion                                                                                              String                            @db.VarChar(255)
+  geometria                                                                                              String
+  centro_movilizacion                                                                                    Int?
+  codigo                                                                                                 Int?
+  nmcl_dominio_localizacion                                                                              nmcl_dominio_localizacion         @relation(fields: [localizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centro_movilizacion_instruccion_centro_movilizacion_instruccion_centro_instruccionTocentro_instruccion centro_movilizacion_instruccion[] @relation("centro_movilizacion_instruccion_centro_instruccionTocentro_instruccion")
+  persona_persona_centro_instruccionTocentro_instruccion                                                 persona[]                         @relation("persona_centro_instruccionTocentro_instruccion")
+  seg_usuario_seg_usuario_centro_instruccionTocentro_instruccion                                         seg_usuario[]                     @relation("seg_usuario_centro_instruccionTocentro_instruccion")
+  unidad_militar_unidad_militar_centro_instruccionTocentro_instruccion                                   unidad_militar[]                  @relation("unidad_militar_centro_instruccionTocentro_instruccion")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model centro_movilizacion {
+  id                                                                                                       Int                                  @id @default(autoincrement())
+  base                                                                                                     Int?
+  localizacion                                                                                             Int
+  jefe                                                                                                     Int?
+  nombre                                                                                                   String                               @db.VarChar(50)
+  direccion                                                                                                String                               @db.VarChar(255)
+  geometria                                                                                                String
+  id_cent_dirmov                                                                                           String?                              @db.VarChar(50)
+  direccion_acuartelamiento                                                                                String?                              @db.VarChar(255)
+  activo                                                                                                   Boolean?
+  old_jefe                                                                                                 Int?
+  id_babel                                                                                                 Int?
+  base_movilizacion                                                                                        base_movilizacion?                   @relation(fields: [base], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "centro_movilizacion_base_movilizacion_fk")
+  nmcl_dominio_localizacion                                                                                nmcl_dominio_localizacion            @relation(fields: [localizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario_centro_movilizacion_jefeToseg_usuario                                                        seg_usuario?                         @relation("centro_movilizacion_jefeToseg_usuario", fields: [jefe], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_centro_movilizacion_jefe")
+  centro_movilizacion_instruccion_centro_movilizacion_instruccion_centro_movilizacionTocentro_movilizacion centro_movilizacion_instruccion[]    @relation("centro_movilizacion_instruccion_centro_movilizacionTocentro_movilizacion")
+  centros_movilizacion_jefe                                                                                centros_movilizacion_jefe[]
+  persona                                                                                                  persona[]
+  proceso_reclutamiento_lugar_base                                                                         proceso_reclutamiento_lugar_base[]
+  proceso_reclutamiento_unidad_lugar                                                                       proceso_reclutamiento_unidad_lugar[]
+  recluta_proceso_recluta_proceso_centro_movilizacionTocentro_movilizacion                                 recluta_proceso[]                    @relation("recluta_proceso_centro_movilizacionTocentro_movilizacion")
+  reservista_proceso_reservista_proceso_centro_movilizacionTocentro_movilizacion                           reservista_proceso[]                 @relation("reservista_proceso_centro_movilizacionTocentro_movilizacion")
+  seg_usuario_seg_usuario_centroTocentro_movilizacion                                                      seg_usuario[]                        @relation("seg_usuario_centroTocentro_movilizacion")
+  unidad_militar_unidad_militar_centro_movilizacionTocentro_movilizacion                                   unidad_militar[]                     @relation("unidad_militar_centro_movilizacionTocentro_movilizacion")
+  unidad_reentrenamiento_unidad_reentrenamiento_centro_movilizacionTocentro_movilizacion                   unidad_reentrenamiento[]             @relation("unidad_reentrenamiento_centro_movilizacionTocentro_movilizacion")
+
+  @@unique([base, nombre])
+}
+
+model centro_movilizacion_instruccion {
+  centro_movilizacion                                                                          Int
+  centro_instruccion                                                                           Int
+  centro_instruccion_centro_movilizacion_instruccion_centro_instruccionTocentro_instruccion    centro_instruccion  @relation("centro_movilizacion_instruccion_centro_instruccionTocentro_instruccion", fields: [centro_instruccion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centro_movilizacion_centro_movilizacion_instruccion_centro_movilizacionTocentro_movilizacion centro_movilizacion @relation("centro_movilizacion_instruccion_centro_movilizacionTocentro_movilizacion", fields: [centro_movilizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([centro_movilizacion, centro_instruccion])
+}
+
+model centro_movilizacion_reservas {
+  id                        Int                        @id @default(autoincrement())
+  base                      Int?
+  localizacion              Int?
+  jefe                      Int?
+  nombre                    String?                    @db.VarChar(50)
+  direccion                 String?                    @db.VarChar(255)
+  geometria                 String?
+  id_cent_dirmov            String?                    @db.VarChar(50)
+  direccion_acuartelamiento String?                    @db.VarChar(255)
+  activo                    Boolean?
+  old_jefe                  Int?
+  id_babel                  Int?
+  nmcl_dominio_localizacion nmcl_dominio_localizacion? @relation(fields: [localizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario               seg_usuario?               @relation(fields: [jefe], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_centro_movilizacion_reservas_jefe")
+
+  @@unique([base, nombre])
+}
+
+model centros_movilizacion_jefe {
+  id                  Int                 @id @default(autoincrement())
+  centro              Int
+  jefe                Int
+  fecha_inicio        DateTime            @db.Timestamp(6)
+  fecha_fin           DateTime?           @db.Timestamp(6)
+  old_jefe            Int?
+  centro_movilizacion centro_movilizacion @relation(fields: [centro], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario         seg_usuario         @relation(fields: [jefe], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_centro_movilizacion_jefe_jefe")
+}
+
+model certificate_type {
+  certificate_type_id   String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  type_name             String                  @db.VarChar(255)
+  description           String?
+  reservist_certificate reservist_certificate[]
+}
+
+model cursos {
+  id                     Int                      @id @default(autoincrement())
+  nombre                 String                   @unique @db.VarChar(255)
+  procesos_cursos        procesos_cursos[]
+  recluta_proceso_cursos recluta_proceso_cursos[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model data_test {
+  code Int?
+  nui  String? @db.VarChar
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model dual {
+  dummy String? @db.VarChar(1)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model etapa_pregunta {
+  id                 Int             @id(map: "etapa_preguntas_pkey") @default(autoincrement())
+  nombre             String          @unique(map: "etapa_preguntas_nombre_key") @db.VarChar(50)
+  cantidad_preguntas Int
+  orden              Int
+  activa             Boolean?
+  pregunta_test      pregunta_test[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model gen_persona {
+  i_pk_persona String? @db.VarChar(20)
+  vc_cedula    String? @db.VarChar(10)
+
+  @@ignore
+}
+
+model instituciones_capacitacion {
+  id                     Int                      @id @default(autoincrement())
+  nombre                 String                   @unique(map: "instituciones_capacitacion_uk") @db.VarChar(256)
+  token                  String                   @db.VarChar(256)
+  url_ws                 String                   @db.VarChar(256)
+  url_web                String                   @db.VarChar(256)
+  capacitaciones         capacitaciones[]
+  reservista_institucion reservista_institucion[]
+}
+
+model nmcl_armas {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(100)
+  id_dir_mov  Int?
+  reservistas reservistas[]
+}
+
+model nmcl_cargo {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(100)
+  SIGLAS      String?       @db.VarChar(25)
+  persona     persona[]
+  seg_usuario seg_usuario[]
+}
+
+model nmcl_destrezas {
+  id                    Int                     @id @default(autoincrement())
+  nombre                String                  @unique(map: "nmcl_destrezas_nombre_uk") @db.VarChar(100)
+  reservistas_destrezas reservistas_destrezas[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model nmcl_dominio_localizacion {
+  id                              Int                            @id @default(autoincrement())
+  nivel_localizacion              Int?
+  padre                           Int?
+  valor                           String                         @db.VarChar(255)
+  id_dirmov                       Int?
+  id_padre_dirmov                 Int?
+  base_movilizacion               base_movilizacion[]
+  centro_instruccion              centro_instruccion[]
+  centro_movilizacion             centro_movilizacion[]
+  centro_movilizacion_reservas    centro_movilizacion_reservas[]
+  nmcl_nivel_localizacion         nmcl_nivel_localizacion?       @relation(fields: [nivel_localizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_dominio_localizacion       nmcl_dominio_localizacion?     @relation("nmcl_dominio_localizacionTonmcl_dominio_localizacion", fields: [padre], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_nmcl_dominio_localizacion nmcl_dominio_localizacion[]    @relation("nmcl_dominio_localizacionTonmcl_dominio_localizacion")
+  recluta                         recluta[]
+  recluta_proceso                 recluta_proceso[]
+  reservista_proceso              reservista_proceso[]
+  unidad_militar                  unidad_militar[]
+
+  @@unique([padre, valor])
+}
+
+model nmcl_fuerza {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(100)
+  id_dir_mov  Int?
+  reservistas reservistas[]
+}
+
+model nmcl_grado {
+  id          Int           @id @default(autoincrement())
+  nombre      String        @db.VarChar(100)
+  SIGLAS      String?       @db.VarChar(30)
+  FUERZA      String?       @db.VarChar(25)
+  id_dir_mov  Int?
+  persona     persona[]
+  reservistas reservistas[]
+  seg_usuario seg_usuario[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model nmcl_localizacion {
+  id                      Int                       @id @default(autoincrement())
+  nombre                  String                    @unique @db.VarChar(100)
+  descripcion             String?                   @db.VarChar(255)
+  niveles                 Int                       @db.SmallInt
+  nmcl_nivel_localizacion nmcl_nivel_localizacion[]
+}
+
+model nmcl_nivel_estudios {
+  id                   Int                    @id @default(autoincrement())
+  nombre               String                 @unique(map: "nmcl_nivel_estudios_nombre_uk") @db.VarChar(100)
+  reservistas_estudios reservistas_estudios[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model nmcl_nivel_localizacion {
+  id                        Int                         @id @default(autoincrement())
+  localizacion              Int?
+  nivel                     Int                         @db.SmallInt
+  nombre                    String                      @db.VarChar(255)
+  nmcl_dominio_localizacion nmcl_dominio_localizacion[]
+  nmcl_localizacion         nmcl_localizacion?          @relation(fields: [localizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([localizacion, nombre])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model notificacion {
+  id            Int         @id(map: "notificaciones_pkey") @default(autoincrement())
+  texto         String
+  usuario       Int
+  leida         Boolean     @default(false)
+  fecha_ingreso DateTime    @db.Timestamp(6)
+  fecha_leida   DateTime?   @db.Timestamp(6)
+  asunto        String      @db.VarChar(100)
+  accion        String?     @db.VarChar(255)
+  seg_usuario   seg_usuario @relation(fields: [usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "notificacion_id_usuario_fkey")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model organico_institucional {
+  I_PK_ORGANICOINSTITUCIONAL Int?
+  CENTRO_MOVILIZACION        String? @db.VarChar(250)
+  I_PK_ORGANICOMILITAR       Int?
+  VC_NOMBRE_UNIDAD           String? @db.VarChar(250)
+  C_TIPO                     String? @db.VarChar(50)
+  VC_SIGLAS                  String? @db.VarChar(50)
+  VC_LUGARGUARNICION         String? @db.VarChar(50)
+  B_ACTIVO                   Int?
+  VC_PLAZA                   String? @db.VarChar(50)
+  codigo_unidad_fuerzas      String? @db.VarChar(50)
+
+  @@ignore
+}
+
+model parishes {
+  id_parish   String   @id @db.Char(6)
+  parish_name String?  @db.VarChar(100)
+  canton_id   String?  @db.Char(4)
+  is_urban    Boolean?
+  cantons     cantons? @relation(fields: [canton_id], references: [id_canton], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model parroquias {
+  C_digo_Provincia Int?    @map("Código Provincia")
+  Provincia        String? @db.VarChar(50)
+  C_digo_Cant_n    Int?    @map("Código Cantón")
+  Cant_n           String? @map("Cantón") @db.VarChar(50)
+  C_digo_Parroquia Int?    @map("Código Parroquia")
+  Parroquia        String? @db.VarChar(64)
+
+  @@ignore
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model persona {
+  id                                                                Int                  @id(map: "pk_persona") @default(autoincrement())
+  identificacion                                                    String               @db.VarChar(11)
+  nombres                                                           String               @db.VarChar(50)
+  apellidos                                                         String?              @db.VarChar(50)
+  telefono                                                          String?              @db.VarChar(15)
+  celular                                                           String?              @db.VarChar(15)
+  email                                                             String?              @db.VarChar(50)
+  fecha_registro                                                    DateTime             @db.Timestamp(6)
+  direccion                                                         String?
+  foto                                                              Int?
+  cargo_aux                                                         String?              @db.VarChar(50)
+  grado_aux                                                         String?              @db.VarChar(50)
+  centro                                                            Int?
+  base                                                              Int?
+  cargo                                                             Int?
+  grado                                                             Int?
+  unidad                                                            Int?
+  centro_instruccion                                                Int?
+  base_movilizacion                                                 base_movilizacion?   @relation(fields: [base], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_cargo                                                        nmcl_cargo?          @relation(fields: [cargo], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centro_movilizacion                                               centro_movilizacion? @relation(fields: [centro], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centro_instruccion_persona_centro_instruccionTocentro_instruccion centro_instruccion?  @relation("persona_centro_instruccionTocentro_instruccion", fields: [centro_instruccion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  adjunto                                                           adjunto?             @relation(fields: [foto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_grado                                                        nmcl_grado?          @relation(fields: [grado], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unidad_militar                                                    unidad_militar?      @relation(fields: [unidad], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario_seg_usuario_personaTopersona                          seg_usuario[]        @relation("seg_usuario_personaTopersona")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model pregunta_test {
+  id                              Int                               @id(map: "preguntas_test_pkey") @default(autoincrement())
+  etapa                           Int
+  pregunta                        String
+  respuesta_esperada              Boolean?
+  activa                          Boolean?
+  etapa_pregunta                  etapa_pregunta                    @relation(fields: [etapa], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "preguntas_test_etapa_fkey")
+  proceso_reclutamiento_preguntas proceso_reclutamiento_preguntas[]
+  recluta_proceso_pregunta        recluta_proceso_pregunta[]
+
+  @@unique([etapa, pregunta], map: "preguntas_test_etapa_pregunta_key")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model proceso_reclutamiento {
+  id                                                   Int                                  @id @default(autoincrement())
+  anno                                                 Int
+  llamada                                              String                               @db.VarChar(10)
+  edad_minima                                          Int?
+  edad_maxima                                          Int?
+  fecha_inicio_registro                                DateTime                             @db.Timestamp(6)
+  fecha_fin_registro                                   DateTime                             @db.Timestamp(6)
+  hora_inicio_acuartelamiento                          DateTime                             @db.Time(6)
+  hora_fin_acuartelamiento                             DateTime                             @db.Time(6)
+  minutos_test                                         Int
+  activo                                               Boolean?
+  fecha_acuartelamiento                                DateTime                             @db.Timestamp(6)
+  bajas_permitidas                                     Int
+  fecha_fin_dias                                       DateTime?                            @db.Timestamp(6)
+  fecha_fin_dias_posteriores                           DateTime?                            @db.Timestamp(6)
+  cant_cursos                                          Int?
+  foto_uniforme                                        Int?
+  foto_jockey                                          Int?
+  foto_calzado                                         Int?
+  foto_camiseta                                        Int?
+  titulo_reporte_uniforme                              String?                              @db.VarChar(255)
+  titulo_reporte_jockey                                String?                              @db.VarChar(255)
+  titulo_reporte_calzado                               String?                              @db.VarChar(255)
+  titulo_reporte_camiseta                              String?                              @db.VarChar(255)
+  titulo_reporte_estudios                              String?                              @db.VarChar(255)
+  adjunto_proceso_reclutamiento_foto_calzadoToadjunto  adjunto?                             @relation("proceso_reclutamiento_foto_calzadoToadjunto", fields: [foto_calzado], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  adjunto_proceso_reclutamiento_foto_camisetaToadjunto adjunto?                             @relation("proceso_reclutamiento_foto_camisetaToadjunto", fields: [foto_camiseta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  adjunto_proceso_reclutamiento_foto_jockeyToadjunto   adjunto?                             @relation("proceso_reclutamiento_foto_jockeyToadjunto", fields: [foto_jockey], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  adjunto_proceso_reclutamiento_foto_uniformeToadjunto adjunto?                             @relation("proceso_reclutamiento_foto_uniformeToadjunto", fields: [foto_uniforme], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proceso_reclutamiento_bases                          proceso_reclutamiento_bases[]
+  proceso_reclutamiento_lugar_base                     proceso_reclutamiento_lugar_base[]
+  proceso_reclutamiento_preguntas                      proceso_reclutamiento_preguntas[]
+  proceso_reclutamiento_unidad_lugar                   proceso_reclutamiento_unidad_lugar[]
+  procesos_cursos                                      procesos_cursos[]
+  recluta_proceso                                      recluta_proceso[]
+  test_sistemas                                        test_sistemas[]
+
+  @@unique([anno, llamada])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model proceso_reclutamiento_bases {
+  id                    Int                   @id @default(autoincrement())
+  proceso               Int
+  base                  Int
+  jefe_cedula           String?               @db.VarChar(11)
+  jefe_nombres          String?               @db.VarChar(50)
+  jefe_apellidos        String?               @db.VarChar(50)
+  jefe_cargo            String?               @db.VarChar(50)
+  jefe_grado            String?               @db.VarChar(50)
+  nombre_base           String?               @db.VarChar(50)
+  proceso_reclutamiento proceso_reclutamiento @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([proceso, base])
+}
+
+model proceso_reclutamiento_lugar_base {
+  id                                                                      Int                   @id @default(autoincrement())
+  lugar                                                                   Int
+  base                                                                    Int
+  proceso                                                                 Int
+  nombre_lugar                                                            String                @db.VarChar(80)
+  jefe_cedula                                                             String?               @db.VarChar(11)
+  jefe_nombres                                                            String?               @db.VarChar(50)
+  jefe_apellidos                                                          String?               @db.VarChar(50)
+  jefe_cargo                                                              String?               @db.VarChar(50)
+  jefe_grado                                                              String?               @db.VarChar(50)
+  psicologo                                                               Int?
+  medico                                                                  Int?
+  odontologo                                                              Int?
+  laboratorista                                                           Int?
+  turno                                                                   Int?
+  cupo_masculino                                                          Int?
+  cupo_femenino                                                           Int?
+  registrado_masculino                                                    Int?
+  registrado_femenino                                                     Int?
+  organico_masculino                                                      Int?
+  organico_femenino                                                       Int?
+  old_laboratorista                                                       Int?
+  old_medico                                                              Int?
+  old_odontologo                                                          Int?
+  old_psicologo                                                           Int?
+  seg_usuario_proceso_reclutamiento_lugar_base_laboratoristaToseg_usuario seg_usuario?          @relation("proceso_reclutamiento_lugar_base_laboratoristaToseg_usuario", fields: [laboratorista], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_proceso_reclutamiento_lugar_base_laboratorista")
+  seg_usuario_proceso_reclutamiento_lugar_base_medicoToseg_usuario        seg_usuario?          @relation("proceso_reclutamiento_lugar_base_medicoToseg_usuario", fields: [medico], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_proceso_reclutamiento_lugar_base_medico")
+  seg_usuario_proceso_reclutamiento_lugar_base_odontologoToseg_usuario    seg_usuario?          @relation("proceso_reclutamiento_lugar_base_odontologoToseg_usuario", fields: [odontologo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_proceso_reclutamiento_lugar_base_odontologo")
+  seg_usuario_proceso_reclutamiento_lugar_base_psicologoToseg_usuario     seg_usuario?          @relation("proceso_reclutamiento_lugar_base_psicologoToseg_usuario", fields: [psicologo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_proceso_reclutamiento_lugar_base_psicologo")
+  base_movilizacion                                                       base_movilizacion     @relation(fields: [base], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centro_movilizacion                                                     centro_movilizacion   @relation(fields: [lugar], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proceso_reclutamiento                                                   proceso_reclutamiento @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([lugar, base, proceso])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model proceso_reclutamiento_preguntas {
+  id                    Int                   @id @default(autoincrement())
+  proceso               Int
+  pregunta              Int
+  pregunta_test         pregunta_test         @relation(fields: [pregunta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proceso_reclutamiento proceso_reclutamiento @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([proceso, pregunta])
+}
+
+model proceso_reclutamiento_unidad_lugar {
+  id                    Int                   @id @default(autoincrement())
+  unidad                Int
+  lugar                 Int
+  proceso               Int
+  nombre_unidad         String                @db.VarChar(80)
+  prioridad             Int?
+  cupo_masculino        Int?
+  cupo_femenino         Int?
+  registrado_masculino  Int?
+  registrado_femenino   Int?
+  fuerza                String?               @db.VarChar
+  organico_masculino    Int?
+  organico_femenino     Int?
+  centro_movilizacion   centro_movilizacion   @relation(fields: [lugar], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proceso_reclutamiento proceso_reclutamiento @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unidad_militar        unidad_militar        @relation(fields: [unidad], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([unidad, lugar, proceso])
+}
+
+model proceso_registro_reservistas {
+  id                    Int                  @id @default(autoincrement())
+  fecha_inicio_registro DateTime             @db.Timestamp(6)
+  fecha_fin_registro    DateTime             @db.Timestamp(6)
+  anno_desde            Int
+  anno_hasta            Int
+  activo                Boolean?
+  reservista_proceso    reservista_proceso[]
+}
+
+model procesos_cursos {
+  curso                 Int
+  proceso               Int
+  cursos                cursos                @relation(fields: [curso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proceso_reclutamiento proceso_reclutamiento @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([curso, proceso])
+}
+
+model provinces {
+  id_prov       String    @id @db.Char(2)
+  province_name String?   @db.VarChar(100)
+  cantons       cantons[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model recluta {
+  id                                               Int                        @id(map: "pk_recluta") @default(autoincrement())
+  identificacion                                   String                     @db.VarChar(11)
+  nombres                                          String                     @db.VarChar(250)
+  apellido_paterno                                 String?                    @db.VarChar(50)
+  apellido_materno                                 String?                    @db.VarChar(50)
+  telefono                                         String?                    @db.VarChar(15)
+  email                                            String?                    @db.VarChar(250)
+  fecha_registro                                   DateTime                   @db.Timestamp(6)
+  fecha_nacimiento                                 DateTime                   @db.Timestamp(6)
+  sexo                                             String?                    @db.VarChar(10)
+  estado_civil                                     String                     @db.VarChar(50)
+  estatura                                         Decimal?                   @db.Decimal
+  pais_nacimiento                                  String                     @db.VarChar(50)
+  localizacion_nacimiento                          Int?
+  foto                                             Int?
+  edad                                             Int
+  edad_string                                      String?                    @db.VarChar(100)
+  telefono_emergencias                             String?                    @db.VarChar(15)
+  lugar_string                                     String?                    @db.VarChar(250)
+  id_demo                                          Int?
+  id_recluta_produccion                            Int?
+  foto_cedula                                      String?
+  certif_covid                                     Int?
+  adjunto_recluta_certif_covidToadjunto            adjunto?                   @relation("recluta_certif_covidToadjunto", fields: [certif_covid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  adjunto_recluta_fotoToadjunto                    adjunto?                   @relation("recluta_fotoToadjunto", fields: [foto], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_dominio_localizacion                        nmcl_dominio_localizacion? @relation(fields: [localizacion_nacimiento], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recluta_proceso_recluta_proceso_reclutaTorecluta recluta_proceso[]          @relation("recluta_proceso_reclutaTorecluta")
+}
+
+model recluta_bajas {
+  id             Int    @id @default(autoincrement())
+  identificacion String @db.VarChar(11)
+  numero_bajas   Int
+}
+
+model recluta_enfermedad {
+  id_enfermedad        Int     @id(map: "pk_recluta_enfermedad")
+  id_recluta_parte_c_h Int
+  nombre_enfermedad    String? @db.VarChar(100)
+  b_activo             String? @db.Bit(1)
+
+  @@index([id_recluta_parte_c_h], map: "fki_recluta_enfermedad_rec_cuerpo_humano")
+}
+
+model recluta_parte_cuerpo_humano {
+  id_enfermedad_ch Int     @id(map: "pk_recluta_parte_cuerpo_humano")
+  descripcion      String? @db.VarChar
+  b_activo         String? @db.Bit(1)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model recluta_proceso {
+  id                                                                                           Int                             @id(map: "pk_recluta_proceso") @default(autoincrement())
+  recluta                                                                                      Int
+  fecha_registro                                                                               DateTime                        @db.Timestamp(6)
+  proceso                                                                                      Int
+  pais_residencia                                                                              String?                         @db.VarChar(50)
+  localizacion_residencia                                                                      Int?
+  calle_principal_residencia                                                                   String?                         @db.VarChar(150)
+  calle_secundaria_residencia                                                                  String?                         @db.VarChar(150)
+  num_casa                                                                                     String?                         @db.VarChar(150)
+  referencias                                                                                  String?
+  geometria                                                                                    String?
+  fecha_consulta_antecedentes                                                                  DateTime?                       @db.Timestamp(6)
+  resultados_antecedentes                                                                      String?
+  fecha_consulta_estudios                                                                      DateTime?                       @db.Timestamp(6)
+  resultados_estudios                                                                          String?
+  idoneo                                                                                       Boolean?
+  fecha_resultado                                                                              DateTime?                       @db.Timestamp(6)
+  unidad_militar                                                                               Int?
+  fecha_asignacion                                                                             DateTime?                       @db.Timestamp(6)
+  observaciones                                                                                String?
+  volver_presentarse                                                                           String?                         @db.VarChar(20)
+  centro_movilizacion                                                                          Int?
+  intentos                                                                                     Int?
+  fecha_intento1                                                                               DateTime?                       @db.Timestamp(6)
+  fecha_intento2                                                                               DateTime?                       @db.Timestamp(6)
+  fecha_intento3                                                                               DateTime?                       @db.Timestamp(6)
+  causa_rechazo                                                                                String?                         @db.VarChar(15)
+  turno                                                                                        Int?
+  turno_secuencia                                                                              Int?
+  fecha_baja                                                                                   DateTime?                       @db.Timestamp(6)
+  unidad_militar_inicial                                                                       Int?
+  certificado_vacunacion_ok                                                                    Boolean?
+  base_movilizacion                                                                            Int?
+  sincronizado                                                                                 Boolean?
+  talla_uniforme                                                                               String?                         @db.VarChar(5)
+  talla_jockey                                                                                 String?                         @db.VarChar(5)
+  talla_calzado                                                                                String?                         @db.VarChar(5)
+  talla_camiseta                                                                               String?                         @db.VarChar(5)
+  estudio                                                                                      String?                         @db.VarChar(5)
+  base_movilizacion_recluta_proceso_base_movilizacionTobase_movilizacion                       base_movilizacion?              @relation("recluta_proceso_base_movilizacionTobase_movilizacion", fields: [base_movilizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centro_movilizacion_recluta_proceso_centro_movilizacionTocentro_movilizacion                 centro_movilizacion?            @relation("recluta_proceso_centro_movilizacionTocentro_movilizacion", fields: [centro_movilizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_dominio_localizacion                                                                    nmcl_dominio_localizacion?      @relation(fields: [localizacion_residencia], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proceso_reclutamiento                                                                        proceso_reclutamiento           @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recluta_recluta_proceso_reclutaTorecluta                                                     recluta                         @relation("recluta_proceso_reclutaTorecluta", fields: [recluta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  unidad_militar_recluta_proceso_unidad_militarTounidad_militar                                unidad_militar?                 @relation("recluta_proceso_unidad_militarTounidad_militar", fields: [unidad_militar], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recluta_proceso_cursos_recluta_proceso_cursos_recluta_procesoTorecluta_proceso               recluta_proceso_cursos[]        @relation("recluta_proceso_cursos_recluta_procesoTorecluta_proceso")
+  recluta_proceso_pregunta_recluta_proceso_pregunta_recluta_procesoTorecluta_proceso           recluta_proceso_pregunta[]      @relation("recluta_proceso_pregunta_recluta_procesoTorecluta_proceso")
+  recluta_record_medico                                                                        recluta_record_medico[]
+  test_recluta_proceso_pregunta_test_recluta_proceso_pregunta_recluta_procesoTorecluta_proceso test_recluta_proceso_pregunta[] @relation("test_recluta_proceso_pregunta_recluta_procesoTorecluta_proceso")
+
+  @@unique([recluta, proceso])
+}
+
+model recluta_proceso_cursos {
+  curso                                                                   Int
+  recluta_proceso                                                         Int
+  cursos                                                                  cursos          @relation(fields: [curso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recluta_proceso_recluta_proceso_cursos_recluta_procesoTorecluta_proceso recluta_proceso @relation("recluta_proceso_cursos_recluta_procesoTorecluta_proceso", fields: [recluta_proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([curso, recluta_proceso])
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model recluta_proceso_pregunta {
+  id                                                                        Int             @id(map: "pk_recluta_proceso_pregunta") @default(autoincrement())
+  recluta_proceso                                                           Int
+  pregunta                                                                  Int
+  respuesta                                                                 Boolean?
+  pregunta_test                                                             pregunta_test   @relation(fields: [pregunta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recluta_proceso_recluta_proceso_pregunta_recluta_procesoTorecluta_proceso recluta_proceso @relation("recluta_proceso_pregunta_recluta_procesoTorecluta_proceso", fields: [recluta_proceso], references: [id], onDelete: Cascade)
+
+  @@unique([pregunta, recluta_proceso], map: "recluta_proceso_pregunta_proceso_pregunta_key")
+}
+
+model recluta_record_medico {
+  id                          Int             @id @default(autoincrement())
+  id_recluta_proceso          Int
+  id_seg_usuario              Int
+  proceso                     Int
+  tipo_examen                 String          @db.VarChar
+  fecha_registro              DateTime        @default(now()) @db.Timestamp(6)
+  psi_criterio                String?         @db.VarChar
+  psi_diagnostico             String?         @db.VarChar
+  med_talla                   String?         @db.VarChar
+  med_peso                    String?         @db.VarChar
+  med_presion_arterial        String?         @db.VarChar
+  med_pulso                   String?         @db.VarChar
+  med_antecedentes_familiares String?         @db.VarChar
+  med_antecedentes_personales String?         @db.VarChar
+  lab_tipo_sangre             String?         @db.VarChar
+  lab_toxicologico            Boolean?
+  lab_obse_toxic              String?         @db.VarChar
+  lab_vih                     Boolean?
+  lab_embarazo                Boolean?
+  lab_gineco                  Boolean?
+  lab_gineco_observacion      String?         @db.VarChar
+  lab_idoneo                  Boolean?
+  lista_afecciones            Int[]
+  observacion                 String?         @db.VarChar
+  idoneo                      Boolean
+  certificado_pdf             Bytes?
+  autorizado                  Boolean?        @default(false)
+  med_condicion_preexistente  Boolean?        @default(false)
+  recluta_proceso             recluta_proceso @relation(fields: [id_recluta_proceso], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rfm_recluta_proceso")
+  seg_usuario                 seg_usuario     @relation(fields: [id_seg_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_rfm_seg_usuario")
+}
+
+model recruits_recruit {
+  id            BigInt   @id @default(autoincrement())
+  first_name    String   @db.VarChar(100)
+  last_name     String   @db.VarChar(100)
+  email         String   @unique @db.VarChar(254)
+  phone_number  String   @db.VarChar(15)
+  date_of_birth DateTime @db.Date
+
+  @@index([email], map: "recruits_recruit_email_007282be_like")
+}
+
+model reserva_organico {
+  id                Int                @id
+  nombre            String?            @db.VarChar(250)
+  direccion         String?            @db.VarChar(250)
+  localizacion      Int?
+  base_movilzacion  Int?
+  base_movilizacion base_movilizacion? @relation(fields: [base_movilzacion], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reserva_organico_base_fkey")
+  unidad_militar    unidad_militar[]
+}
+
+model reserva_sybase {
+  id                   Int       @id @default(autoincrement())
+  cedula               String?   @db.VarChar(10)
+  nombres              String?   @db.VarChar(100)
+  fecha_nacimiento     DateTime? @db.Date
+  fecha_alta           DateTime? @db.Date
+  fecha_licenciamiento DateTime? @db.Date
+  fecha_baja           DateTime? @db.Date
+  grado                String?   @db.VarChar(50)
+  i_fk_gradomilitar    Int?
+  d_fechaasignacion    DateTime? @db.Date
+  b_activo             Boolean?
+  i_fk_unidadex        Int?
+  unidad_psmv          String?   @db.VarChar(250)
+  leva                 String?   @db.VarChar(50)
+  llamada              String?   @db.VarChar(50)
+  genero               String?   @db.VarChar(20)
+  fuerza               String?   @db.VarChar(50)
+  ideneo               Int?
+}
+
+model reservist_certificate {
+  certificate_id         String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  reservist_id           String?                 @db.Uuid
+  certificate_type_id    String?                 @db.Uuid
+  certificate_name       String                  @db.VarChar(255)
+  issue_date             DateTime                @db.Date
+  expiry_date            DateTime?               @db.Date
+  document_path          String?                 @db.VarChar(255)
+  certificate_type       certificate_type?       @relation(fields: [certificate_type_id], references: [certificate_type_id], onDelete: NoAction, onUpdate: NoAction)
+  reservist_registration reservist_registration? @relation(fields: [reservist_id], references: [reservist_id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([reservist_id], map: "idx_certificate_reservist_id")
+  @@index([certificate_type_id], map: "idx_certificate_type_id")
+}
+
+model reservist_registration {
+  reservist_id          String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  national_id           String                  @unique @db.VarChar(50)
+  full_name             String                  @db.VarChar(255)
+  rank                  String?                 @db.VarChar(100)
+  role_performed        String?                 @db.VarChar(255)
+  force_type            String?                 @db.VarChar(100)
+  birth_date            DateTime                @db.Date
+  birth_place           String?                 @db.VarChar(255)
+  registration_date     DateTime?               @default(now()) @db.Timestamp(6)
+  reservist_certificate reservist_certificate[]
+
+  @@index([national_id], map: "idx_registration_national_id")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model reservist_sybase {
+  national_id     String?   @db.VarChar(50)
+  full_name       String?   @db.VarChar(255)
+  birth_date      DateTime? @db.Date
+  military_unit   String?   @db.VarChar(255)
+  conscription    Int?
+  call_up         String?   @db.VarChar(255)
+  gender          String?   @db.VarChar(50)
+  type_speciality String?   @db.VarChar(50)
+  speciality      String?   @db.VarChar(100)
+  role_performed  String?   @db.VarChar(100)
+  rank            String?   @db.VarChar(100)
+  military_force  String?   @db.VarChar(100)
+
+  @@ignore
+}
+
+model reservista_capacitacion {
+  id             Int            @id @default(autoincrement())
+  reservista     Int
+  capacitacion   Int
+  fecha_registro DateTime       @db.Timestamp(6)
+  estado         String?        @db.VarChar(50)
+  capacitaciones capacitaciones @relation(fields: [capacitacion], references: [id], onDelete: Cascade)
+  reservistas    reservistas    @relation(fields: [reservista], references: [id], onDelete: Cascade)
+}
+
+model reservista_institucion {
+  id                         Int                        @id @default(autoincrement())
+  reservista                 Int
+  institucion                Int
+  fecha_registro             DateTime                   @db.Timestamp(6)
+  usuario                    String?                    @db.VarChar(50)
+  clave                      String?                    @db.VarChar(50)
+  instituciones_capacitacion instituciones_capacitacion @relation(fields: [institucion], references: [id], onDelete: Cascade)
+  reservistas                reservistas                @relation(fields: [reservista], references: [id], onDelete: Cascade)
+}
+
+model reservista_proceso {
+  id                                                                                       Int                          @id @default(autoincrement())
+  reservista                                                                               Int
+  fecha_registro                                                                           DateTime                     @db.Timestamp(6)
+  proceso                                                                                  Int
+  pais_residencia                                                                          String?                      @db.VarChar(50)
+  localizacion_residencia                                                                  Int?
+  calle_principal_residencia                                                               String?                      @db.VarChar(150)
+  calle_secundaria_residencia                                                              String?                      @db.VarChar(150)
+  num_casa                                                                                 String?                      @db.VarChar(150)
+  referencias                                                                              String?
+  geometria                                                                                String?
+  fecha_consulta_antecedentes                                                              DateTime?                    @db.Timestamp(6)
+  resultados_antecedentes                                                                  String?
+  fecha_consulta_estudios                                                                  DateTime?                    @db.Timestamp(6)
+  resultados_estudios                                                                      String?
+  idoneo                                                                                   Boolean?
+  fecha_resultado                                                                          DateTime?                    @db.Timestamp(6)
+  observaciones                                                                            String?
+  volver_presentarse                                                                       String?                      @db.VarChar(20)
+  causa_rechazo                                                                            String?                      @db.VarChar(15)
+  fecha_baja                                                                               DateTime?                    @db.Timestamp(6)
+  certificado_vacunacion_ok                                                                Boolean?
+  centro_movilizacion                                                                      Int?
+  disponibilidad                                                                           String?                      @db.VarChar(15)
+  actividad                                                                                String?                      @db.VarChar(15)
+  error_registro                                                                           String?
+  unidad_reentrenamiento                                                                   Int?
+  centro_movilizacion_reservista_proceso_centro_movilizacionTocentro_movilizacion          centro_movilizacion?         @relation("reservista_proceso_centro_movilizacionTocentro_movilizacion", fields: [centro_movilizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_dominio_localizacion                                                                nmcl_dominio_localizacion?   @relation(fields: [localizacion_residencia], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  proceso_registro_reservistas                                                             proceso_registro_reservistas @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reservistas                                                                              reservistas                  @relation(fields: [reservista], references: [id], onDelete: Cascade)
+  unidad_reentrenamiento_reservista_proceso_unidad_reentrenamientoTounidad_reentrenamiento unidad_reentrenamiento?      @relation("reservista_proceso_unidad_reentrenamientoTounidad_reentrenamiento", fields: [unidad_reentrenamiento], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reservista_proceso_unidad_reentrenamiento_fk")
+
+  @@unique([reservista, proceso], map: "reservista_proceso_uk")
+}
+
+model reservistas {
+  id                      Int                       @id @default(autoincrement())
+  identificacion          String                    @db.VarChar(11)
+  nombres                 String                    @db.VarChar(250)
+  apellido_paterno        String?                   @db.VarChar(50)
+  apellido_materno        String?                   @db.VarChar(50)
+  telefono                String?                   @db.VarChar(15)
+  email                   String?                   @db.VarChar(250)
+  fecha_registro          DateTime                  @db.Timestamp(6)
+  fecha_nacimiento        DateTime                  @db.Timestamp(6)
+  sexo                    String?                   @db.VarChar(10)
+  estado_civil            String                    @db.VarChar(50)
+  estatura                Decimal?                  @db.Decimal
+  pais_nacimiento         String                    @db.VarChar(50)
+  localizacion_nacimiento Int?
+  foto                    Int?
+  edad                    Int
+  edad_string             String?                   @db.VarChar(100)
+  telefono_emergencias    String?                   @db.VarChar(15)
+  lugar_string            String?                   @db.VarChar(250)
+  foto_cedula             String?
+  certif_covid            Int?
+  instruccion             String?                   @db.VarChar(15)
+  grado                   Int?
+  fuerza                  Int?
+  arma                    Int?
+  banco                   String?                   @db.VarChar
+  banco_cuenta            String?                   @db.VarChar
+  banco_tipo_cuenta       String?                   @db.VarChar
+  reservista_capacitacion reservista_capacitacion[]
+  reservista_institucion  reservista_institucion[]
+  reservista_proceso      reservista_proceso[]
+  nmcl_armas              nmcl_armas?               @relation(fields: [arma], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_fuerza             nmcl_fuerza?              @relation(fields: [fuerza], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  nmcl_grado              nmcl_grado?               @relation(fields: [grado], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reservistas_destrezas   reservistas_destrezas[]
+  reservistas_estudios    reservistas_estudios[]
+}
+
+model reservistas_destrezas {
+  id             Int            @id @default(autoincrement())
+  reservista     Int
+  destreza       Int
+  tiempo         String         @db.VarChar(100)
+  detalles       String?
+  nmcl_destrezas nmcl_destrezas @relation(fields: [destreza], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reservistas    reservistas    @relation(fields: [reservista], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([reservista, destreza], map: "reservistas_destrezas_uk")
+}
+
+model reservistas_estudios {
+  id                  Int                 @id @default(autoincrement())
+  reservista          Int
+  titulo              String              @db.VarChar(100)
+  institucion         String              @db.VarChar(100)
+  nivel               Int
+  cursando            Boolean?
+  fecha_emision       DateTime?           @db.Timestamp(6)
+  nmcl_nivel_estudios nmcl_nivel_estudios @relation(fields: [nivel], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reservistas         reservistas         @relation(fields: [reservista], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([reservista, titulo, institucion], map: "reservistas_estudios_uk")
+}
+
+model reservistas_sybase {
+  id                   Int       @id @default(autoincrement())
+  cedula               String?   @db.VarChar(20)
+  nombres              String?   @db.VarChar(201)
+  fecha_nacimiento     DateTime? @db.Date
+  fecha_alta           DateTime? @db.Date
+  fecha_licenciamiento String?   @db.VarChar(50)
+  fecha_baja           String?   @db.VarChar(50)
+  grado                String?   @db.VarChar(150)
+  I_FK_GRADOMILITAR    Int?
+  D_FECHAASIGNACION    String?   @db.VarChar(150)
+  B_ACTIVO             String?   @db.VarChar
+  I_FK_UNIDADEX        String?   @db.VarChar
+  unidad_psmv          String?   @db.VarChar(250)
+  LEVA                 String?   @db.VarChar(50)
+  LLAMADA              String?   @db.VarChar(50)
+  GENERO               String?   @db.VarChar(20)
+  FUERZA               String?   @db.VarChar(50)
+}
+
+model reservistas_verificados {
+  id             Int     @id @default(autoincrement())
+  identificacion String? @db.VarChar(15)
+  nombre         String? @db.VarChar(60)
+  apellidos      String? @db.VarChar(60)
+  grado          String? @db.VarChar(20)
+  arma           String? @db.VarChar(20)
+  leva           Int?
+  fuerza         String? @db.VarChar(10)
+  direccion      String? @db.VarChar(100)
+  email          String? @db.VarChar(50)
+  telefono       String? @db.VarChar(15)
+  movil          String? @db.VarChar(15)
+  sexo           String? @db.VarChar(10)
+  provincia      String? @db.VarChar(30)
+  canton         String? @db.VarChar(50)
+  fecha_registro String? @db.VarChar(10)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model secuencias {
+  id        Int  @default(autoincrement())
+  secuencia Int?
+
+  @@ignore
+}
+
+model seg_codigos_activacion {
+  id             Int         @id @default(autoincrement())
+  usuario        Int
+  codigo         String      @db.VarChar(512)
+  fecha_envio    DateTime?   @db.Timestamp(6)
+  fecha_vigencia DateTime?   @db.Timestamp(6)
+  fecha_uso      DateTime?   @db.Timestamp(6)
+  seg_usuario    seg_usuario @relation(fields: [usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model seg_configuracion {
+  id                       Int                      @id @default(autoincrement())
+  nombre                   String                   @unique @db.VarChar(15)
+  codigo_activacion        Boolean?                 @default(true)
+  vigencia_codigo          Int?                     @default(0)
+  fortaleza_contrasena     Int                      @default(2)
+  default_contrasena       String?                  @db.VarChar(15)
+  vigencia_contrasena      Int?                     @default(0)
+  contrasenas_viejas       Int?                     @default(1)
+  recuperacion_contrasena  String?                  @default("MAIL") @db.VarChar(10)
+  cantidad_preguntas       Int?                     @default(3)
+  accesos_fallidos         Int?                     @default(3)
+  tiempo_bloqueo_fallos    Int?                     @default(0)
+  preguntas_sugeridas      Boolean?                 @default(true)
+  seg_fortaleza_contrasena seg_fortaleza_contrasena @relation(fields: [fortaleza_contrasena], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario              seg_usuario[]
+}
+
+model seg_fortaleza_contrasena {
+  id                Int                 @id(map: "seg_fortaleza_contrasennas_pkey") @default(autoincrement())
+  nombre            String              @db.VarChar(15)
+  min_long          Int
+  max_long          Int?
+  may_min           Boolean
+  numeros           Boolean
+  caract_especiales Boolean
+  seg_configuracion seg_configuracion[]
+}
+
+model seg_historial_activacion {
+  id          Int         @id @default(autoincrement())
+  usuario_id  Int
+  fecha       DateTime    @db.Timestamp(6)
+  descripcion String
+  activacion  Boolean     @default(true)
+  seg_usuario seg_usuario @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@unique([usuario_id, fecha], map: "seg_historial_activacion_usuario_id_key")
+}
+
+model seg_historial_password {
+  id             Int         @id(map: "pk_seg_historial_password") @default(autoincrement())
+  salt           String?     @db.VarChar(100)
+  password       String      @db.VarChar(100)
+  fecha_registro DateTime    @db.Timestamp(6)
+  id_usuario     Int
+  seg_usuario    seg_usuario @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model seg_rol {
+  id              Int               @id(map: "pk_seg_rol") @default(autoincrement())
+  nombre          String            @unique(map: "uq_seg_rol_nombre") @db.VarChar(100)
+  sistema         Boolean?
+  descripcion     String            @db.VarChar(255)
+  asignable       Boolean?          @default(true)
+  seg_usuario_rol seg_usuario_rol[]
+}
+
+model seg_usuario {
+  id                                                                                           Int                                @id(map: "pk_seg_usuario") @default(autoincrement())
+  username                                                                                     String                             @unique(map: "uq_seg_usuario_username") @db.VarChar(100)
+  salt                                                                                         String?                            @db.VarChar(100)
+  activo                                                                                       Boolean?                           @default(false)
+  password                                                                                     String?                            @db.VarChar(100)
+  eliminado                                                                                    Boolean?                           @default(false)
+  fecha_registro                                                                               DateTime?                          @db.Timestamp(6)
+  fecha_eliminacion                                                                            DateTime?                          @db.Timestamp(6)
+  fecha_vigencia_password                                                                      DateTime?                          @db.Timestamp(6)
+  intentos_fallidos                                                                            Int?                               @default(0) @db.SmallInt
+  causa_bloqueo                                                                                String?                            @default("Cuenta no usada aún") @db.VarChar(50)
+  primer_ingreso                                                                               Boolean?                           @default(true)
+  persona                                                                                      Int?
+  configuracion                                                                                Int?
+  pregunta_recuperacion                                                                        String?                            @db.VarChar(200)
+  respuesta_recuperacion                                                                       String?                            @db.VarChar(500)
+  nombres                                                                                      String                             @db.VarChar(50)
+  apellidos                                                                                    String?                            @db.VarChar(50)
+  direccion                                                                                    String?
+  telefono                                                                                     String?                            @db.VarChar(15)
+  celular                                                                                      String?                            @db.VarChar(15)
+  email                                                                                        String?                            @db.VarChar(50)
+  centro                                                                                       Int?
+  base                                                                                         Int?
+  grado                                                                                        Int?
+  cargo                                                                                        Int?
+  unidad                                                                                       Int?
+  foto                                                                                         Int?
+  centro_instruccion                                                                           Int?
+  conectado                                                                                    Boolean?
+  fecha_acceso                                                                                 DateTime?                          @db.Timestamp(6)
+  certificado                                                                                  Bytes?
+  base_movilizacion_base_movilizacion_jefeToseg_usuario                                        base_movilizacion[]                @relation("base_movilizacion_jefeToseg_usuario")
+  bases_jefes                                                                                  bases_jefes[]
+  centro_movilizacion_centro_movilizacion_jefeToseg_usuario                                    centro_movilizacion[]              @relation("centro_movilizacion_jefeToseg_usuario")
+  centro_movilizacion_reservas                                                                 centro_movilizacion_reservas[]
+  centros_movilizacion_jefe                                                                    centros_movilizacion_jefe[]
+  notificacion                                                                                 notificacion[]
+  proceso_reclutamiento_lugar_base_proceso_reclutamiento_lugar_base_laboratoristaToseg_usuario proceso_reclutamiento_lugar_base[] @relation("proceso_reclutamiento_lugar_base_laboratoristaToseg_usuario")
+  proceso_reclutamiento_lugar_base_proceso_reclutamiento_lugar_base_medicoToseg_usuario        proceso_reclutamiento_lugar_base[] @relation("proceso_reclutamiento_lugar_base_medicoToseg_usuario")
+  proceso_reclutamiento_lugar_base_proceso_reclutamiento_lugar_base_odontologoToseg_usuario    proceso_reclutamiento_lugar_base[] @relation("proceso_reclutamiento_lugar_base_odontologoToseg_usuario")
+  proceso_reclutamiento_lugar_base_proceso_reclutamiento_lugar_base_psicologoToseg_usuario     proceso_reclutamiento_lugar_base[] @relation("proceso_reclutamiento_lugar_base_psicologoToseg_usuario")
+  recluta_record_medico                                                                        recluta_record_medico[]
+  seg_codigos_activacion                                                                       seg_codigos_activacion[]
+  seg_historial_activacion                                                                     seg_historial_activacion[]
+  seg_historial_password                                                                       seg_historial_password[]
+  base_movilizacion_seg_usuario_baseTobase_movilizacion                                        base_movilizacion?                 @relation("seg_usuario_baseTobase_movilizacion", fields: [base], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_base")
+  nmcl_cargo                                                                                   nmcl_cargo?                        @relation(fields: [cargo], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_cargo")
+  centro_movilizacion_seg_usuario_centroTocentro_movilizacion                                  centro_movilizacion?               @relation("seg_usuario_centroTocentro_movilizacion", fields: [centro], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_centro")
+  centro_instruccion_seg_usuario_centro_instruccionTocentro_instruccion                        centro_instruccion?                @relation("seg_usuario_centro_instruccionTocentro_instruccion", fields: [centro_instruccion], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_centro_instruccion")
+  adjunto                                                                                      adjunto?                           @relation(fields: [foto], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_foto")
+  nmcl_grado                                                                                   nmcl_grado?                        @relation(fields: [grado], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_grado")
+  unidad_militar                                                                               unidad_militar?                    @relation(fields: [unidad], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_unidad")
+  seg_configuracion                                                                            seg_configuracion?                 @relation(fields: [configuracion], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "seg_usuario_id_configuracion_fkey")
+  persona_seg_usuario_personaTopersona                                                         persona?                           @relation("seg_usuario_personaTopersona", fields: [persona], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario_rol                                                                              seg_usuario_rol[]
+}
+
+model seg_usuario_rol {
+  usuario     Int
+  rol         Int
+  seg_rol     seg_rol     @relation(fields: [rol], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  seg_usuario seg_usuario @relation(fields: [usuario], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([usuario, rol])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model temp_users_data {
+  time                    String? @db.VarChar
+  declaro                 String? @db.VarChar
+  puntuacion              String? @db.VarChar
+  cedula                  String? @db.VarChar
+  nombres_completos       String? @db.VarChar
+  fecha_nacimiento        String? @db.VarChar
+  lugar_nacimiento        String? @db.VarChar
+  tipo_sangre             String? @db.VarChar
+  direccion_domiciliaria  String? @db.VarChar
+  telefono                String? @db.VarChar
+  correo_electronico      String? @db.VarChar
+  unidad_militar          String? @db.VarChar
+  funcion                 String? @db.VarChar
+  curso_capacitacion      String? @db.VarChar
+  discapacidad_enfermedad String? @db.VarChar
+  talla_uniforme          String? @db.VarChar
+  talla_calzado           String? @db.VarChar
+  talla_jockey            String? @db.VarChar
+  telefono_representante  String? @db.VarChar
+  parentesco              String? @db.VarChar
+
+  @@ignore
+}
+
+model test_criterios {
+  id                 Int              @id @default(autoincrement())
+  eje                Int
+  nombre             String           @db.VarChar(100)
+  riesgo_bajo_desde  Int
+  riesgo_bajo_hasta  Int
+  riesgo_medio_desde Int
+  riesgo_medio_hasta Int
+  riesgo_alto_desde  Int
+  riesgo_alto_hasta  Int
+  test_ejes          test_ejes        @relation(fields: [eje], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  test_preguntas     test_preguntas[]
+
+  @@unique([eje, nombre])
+}
+
+model test_ejes {
+  id             Int              @id @default(autoincrement())
+  sistema        Int
+  nombre         String           @db.VarChar(50)
+  test_criterios test_criterios[]
+  test_sistemas  test_sistemas    @relation(fields: [sistema], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([sistema, nombre])
+}
+
+model test_preguntas {
+  id                            Int                             @id @default(autoincrement())
+  criterio                      Int
+  nombre                        String
+  tipo                          String                          @db.VarChar(10)
+  test_criterios                test_criterios                  @relation(fields: [criterio], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  test_recluta_proceso_pregunta test_recluta_proceso_pregunta[]
+
+  @@unique([criterio, nombre])
+}
+
+model test_recluta_proceso_pregunta {
+  id                                                                             Int             @id @default(autoincrement())
+  recluta_proceso                                                                Int
+  pregunta                                                                       Int
+  respuesta                                                                      Int?
+  test_preguntas                                                                 test_preguntas  @relation(fields: [pregunta], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  recluta_proceso_test_recluta_proceso_pregunta_recluta_procesoTorecluta_proceso recluta_proceso @relation("test_recluta_proceso_pregunta_recluta_procesoTorecluta_proceso", fields: [recluta_proceso], references: [id], onDelete: Cascade)
+
+  @@unique([pregunta, recluta_proceso])
+}
+
+model test_sistemas {
+  id                    Int                   @id @default(autoincrement())
+  proceso               Int
+  nombre                String                @db.VarChar(50)
+  test_ejes             test_ejes[]
+  proceso_reclutamiento proceso_reclutamiento @relation(fields: [proceso], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([proceso, nombre])
+}
+
+model traza {
+  id             Int      @id @default(autoincrement())
+  direccion_ip   String   @db.VarChar(20)
+  fecha          DateTime @db.Timestamp(6)
+  accion         String   @db.VarChar(255)
+  entidad        String   @db.VarChar(100)
+  usuario_id     Int?
+  detalle        String
+  entidad_id     String   @db.VarChar(100)
+  usuario_nombre String?  @db.VarChar(60)
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model unidad_militar {
+  id                                                                          Int                                  @id @default(autoincrement())
+  centro_instruccion                                                          Int
+  localizacion                                                                Int
+  nombre                                                                      String                               @db.VarChar(80)
+  fuerza                                                                      String                               @db.VarChar(15)
+  direccion                                                                   String                               @db.VarChar(255)
+  geometria                                                                   String
+  cupo_masculino                                                              Int
+  adicional_masculino                                                         Int
+  cupo_femenino                                                               Int
+  adicional_femenino                                                          Int
+  centro_movilizacion                                                         Int?
+  pk_orgacuarte                                                               String?                              @db.VarChar(30)
+  siglas_unidad                                                               String                               @db.VarChar(255)
+  i_fk_leva                                                                   String?                              @db.VarChar(10)
+  i_fk_organicoinstitucional                                                  Int?
+  i_pk_organicomilitar                                                        String?                              @db.VarChar(20)
+  rec_i_pk_organicomilitar                                                    String?                              @db.VarChar(25)
+  activo                                                                      Boolean?
+  id_babel                                                                    Int?
+  codigo_unidad_fuerzas                                                       String?                              @db.VarChar
+  organico_institucional                                                      Int?
+  persona                                                                     persona[]
+  proceso_reclutamiento_unidad_lugar                                          proceso_reclutamiento_unidad_lugar[]
+  recluta_proceso_recluta_proceso_unidad_militarTounidad_militar              recluta_proceso[]                    @relation("recluta_proceso_unidad_militarTounidad_militar")
+  seg_usuario                                                                 seg_usuario[]
+  nmcl_dominio_localizacion                                                   nmcl_dominio_localizacion            @relation(fields: [localizacion], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "centro_instruccion_localizacion_fkey")
+  centro_instruccion_unidad_militar_centro_instruccionTocentro_instruccion    centro_instruccion                   @relation("unidad_militar_centro_instruccionTocentro_instruccion", fields: [centro_instruccion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  centro_movilizacion_unidad_militar_centro_movilizacionTocentro_movilizacion centro_movilizacion?                 @relation("unidad_militar_centro_movilizacionTocentro_movilizacion", fields: [centro_movilizacion], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  reserva_organico                                                            reserva_organico?                    @relation(fields: [organico_institucional], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([centro_instruccion, nombre])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model unidad_militar_temp {
+  i_pk_organicomilitar  String? @db.VarChar(20)
+  vc_nombre             String? @db.VarChar(255)
+  vc_abreviacion        String? @db.VarChar(255)
+  codigo_unidad_fuerzas String? @db.VarChar(50)
+
+  @@ignore
+}
+
+model unidad_reentrenamiento {
+  id                                                                                   Int                  @id @default(autoincrement())
+  nombre                                                                               String               @db.VarChar
+  plaza                                                                                String               @db.VarChar
+  cupo                                                                                 Int
+  asignados                                                                            Int
+  centro_movilizacion                                                                  Int
+  proceso                                                                              Int
+  reservista_proceso_reservista_proceso_unidad_reentrenamientoTounidad_reentrenamiento reservista_proceso[] @relation("reservista_proceso_unidad_reentrenamientoTounidad_reentrenamiento")
+  centro_movilizacion_unidad_reentrenamiento_centro_movilizacionTocentro_movilizacion  centro_movilizacion  @relation("unidad_reentrenamiento_centro_movilizacionTocentro_movilizacion", fields: [centro_movilizacion], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_ur_cm")
+}
