@@ -13,7 +13,6 @@ describe('AppController', () => {
 
     appController = app.get<AppController>(AppController);
   });
-  
 
   describe('root', () => {
     it('should return "Hello World!"', () => {

@@ -13,12 +13,12 @@ export class ProvinceService {
   // Obtener una provincia por su ID
   async getProvinceById(id: string) {
     return this.prisma.provinces.findUnique({
-      where: { id_prov: id },
+      where: { province_id: id },
     });
   }
 
   // Crear una nueva provincia
-  async createProvince(data: { id_prov: string; province_name: string }) {
+  async createProvince(data: { province_id: string; province_name: string }) {
     return this.prisma.provinces.create({
       data,
     });
@@ -27,7 +27,7 @@ export class ProvinceService {
   // Actualizar una provincia por su ID
   async updateProvince(id: string, data: { province_name: string }) {
     return this.prisma.provinces.update({
-      where: { id_prov: id },
+      where: { province_id: id },
       data,
     });
   }
@@ -35,7 +35,7 @@ export class ProvinceService {
   // Eliminar una provincia por su ID
   async deleteProvince(id: string) {
     return this.prisma.provinces.delete({
-      where: { id_prov: id },
+      where: { province_id: id },
     });
   }
 }

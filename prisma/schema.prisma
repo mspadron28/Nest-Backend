@@ -157,10 +157,10 @@ model becas_turismo {
 }
 
 model cantons {
-  id_canton   String     @id @db.Char(4)
+  canton_id   String     @id @db.Char(4)
   canton_name String?    @db.VarChar(100)
   province_id String?    @db.Char(2)
-  provinces   provinces? @relation(fields: [province_id], references: [id_prov], onDelete: NoAction, onUpdate: NoAction)
+  provinces   provinces? @relation(fields: [province_id], references: [province_id], onDelete: NoAction, onUpdate: NoAction)
   parishes    parishes[]
 }
 
@@ -465,11 +465,11 @@ model organico_institucional {
 }
 
 model parishes {
-  id_parish   String   @id @db.Char(6)
+  parish_id   String   @id @db.Char(6)
   parish_name String?  @db.VarChar(100)
   canton_id   String?  @db.Char(4)
   is_urban    Boolean?
-  cantons     cantons? @relation(fields: [canton_id], references: [id_canton], onDelete: NoAction, onUpdate: NoAction)
+  cantons     cantons? @relation(fields: [canton_id], references: [canton_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -675,7 +675,7 @@ model procesos_cursos {
 }
 
 model provinces {
-  id_prov       String    @id @db.Char(2)
+  province_id   String    @id @db.Char(2)
   province_name String?   @db.VarChar(100)
   cantons       cantons[]
 }
@@ -913,9 +913,8 @@ model reservist_registration {
   @@index([national_id], map: "idx_registration_national_id")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model reservist_sybase {
-  national_id     String?   @db.VarChar(50)
+  national_id     String    @id @db.VarChar(50)
   full_name       String?   @db.VarChar(255)
   birth_date      DateTime? @db.Date
   military_unit   String?   @db.VarChar(255)
@@ -927,8 +926,6 @@ model reservist_sybase {
   role_performed  String?   @db.VarChar(100)
   rank            String?   @db.VarChar(100)
   military_force  String?   @db.VarChar(100)
-
-  @@ignore
 }
 
 model reservista_capacitacion {

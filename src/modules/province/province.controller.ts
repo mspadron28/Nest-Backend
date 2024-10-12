@@ -13,7 +13,6 @@ import { ProvinceService } from './province.service';
 export class ProvinceController {
   constructor(private readonly provinceService: ProvinceService) {}
 
-  // Obtener todas las provincias
   @Get()
   async getAllProvinces() {
     return this.provinceService.getAllProvinces();
@@ -28,7 +27,7 @@ export class ProvinceController {
   // Crear una nueva provincia
   @Post()
   async createProvince(
-    @Body() body: { id_prov: string; province_name: string },
+    @Body() body: { province_id: string; province_name: string },
   ) {
     return this.provinceService.createProvince(body);
   }
